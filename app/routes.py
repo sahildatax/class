@@ -1,11 +1,29 @@
+import random
+import string
 import logging
 
 from aiohttp import web
-from telethon.tl.types import Channel, Chat, User
 
-from .config import index_settings
+from .config import index_settings, alias_ids, chat_ids
+
 
 log = logging.getLogger(__name__)
+
+
+def generate_alias_id(chat):
+    chat_id = chat.id
+    title = chat.title
+    while True:
+        alias_id = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(len(str(chat_id)))])
+        if alias_id in alias_ids:
+            continue
+        alias_ids.append(alias_id)
+        chat_ids.append({
+            'chat_id': chat_id,
+            'alias_id': alias_id,
+            'title': title
+        })
+        return alias_id
 
 
 async def setup_routes(app, handler):
